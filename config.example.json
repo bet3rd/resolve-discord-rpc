@@ -1,4 +1,7 @@
 {
   "showProject": true,
-  "showTimeline": false
+  "showTimeline": true,
+  "showClipPosition": true,
+  "showPageIcons": true,
+  "projectTimer": true
 }
