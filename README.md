@@ -53,3 +53,7 @@ status through Resolve's scripting API. `resolve-rpc.pl` turns that into a
 presence and sends it over Discord's local IPC socket.
 
 The log is at `~/Library/Application Support/resolve-discord-rpc/resolve-rpc.log`.
+
+## Credits
+
+DaVinci Resolve logo by Blackmagic Design, via [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:DaVinci_Resolve_Studio.png) (CC BY-SA 4.0).
