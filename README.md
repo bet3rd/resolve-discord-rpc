@@ -93,3 +93,9 @@ needed.
 
 DaVinci Resolve is a trademark of Blackmagic Design. This project isn't
 affiliated with or endorsed by Blackmagic Design.
+
+## License
+
+The code is released under the [MIT License](LICENSE). The license doesn't
+cover the DaVinci Resolve logo or the page icons in `icons/`, which remain the
+property of Blackmagic Design.
