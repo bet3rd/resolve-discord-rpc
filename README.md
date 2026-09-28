@@ -1,13 +1,8 @@
 # DaVinci Resolve Discord Rich Presence
 
-Shows what you're doing in DaVinci Resolve on your Discord profile, for example:
+Shows what you're doing in DaVinci Resolve on your Discord profile.
 
-```
-Playing DaVinci Resolve
-My Project
-Editing a video · Timeline 1
-14:02:33 elapsed
-```
+<img src="docs/screenshot.png" alt="Discord activity cards: editing a video, color grading clip 12 of 29, and rendering at 45%" width="460">
 
 - The timer shows the **total time you've spent on the project**, across
   sessions. Time while the computer sleeps isn't counted.
