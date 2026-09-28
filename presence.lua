@@ -16,8 +16,10 @@ local DEFAULT_CLIENT_ID = '1554134762598310018'
 local DEFAULT_LARGE_IMAGE = 'https://upload.wikimedia.org/wikipedia/commons/4/4d/DaVinci_Resolve_Studio.png'
 
 -- Small page icons, from icons/ in this repo, served by jsDelivr. Pinned to
--- the commit that added them so the images can't change underneath us.
-local ICON_BASE = 'https://cdn.jsdelivr.net/gh/bet3rd/resolve-discord-rpc@2238baad8b74f373e7591ad46d3d0d59947b1e30/icons/'
+-- the icons-v1 tag so the images can't change underneath us. Discord caches
+-- a failed fetch, so if an icon changes, tag a new version rather than
+-- reusing a URL.
+local ICON_BASE = 'https://cdn.jsdelivr.net/gh/bet3rd/resolve-discord-rpc@icons-v1/icons/'
 
 local POLL_INTERVAL = 1
 local WAIT_FOR_RESOLVE_INTERVAL = 5
