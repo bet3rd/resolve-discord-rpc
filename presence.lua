@@ -156,9 +156,10 @@ end
 
 -- Resolve ------------------------------------------------------------------------
 
--- Position of the clip under the playhead among all video clips, in the order
--- the Color page lists them. Listing every clip takes a call per clip, so the
--- order is cached per timeline.
+-- Position of the clip under the playhead among the clips the Color page
+-- lists: every video item that can be graded, i.e. has a node graph (effects
+-- such as a Fusion camera shake don't). Listing every clip takes a few calls
+-- per clip, so the order is cached per timeline.
 local clipOrder = { positions = {}, total = 0, builtAt = 0 }
 
 local function clipPosition(timeline)
@@ -167,21 +168,35 @@ local function clipPosition(timeline)
   local id = item:GetUniqueId()
   local timelineId = timeline:GetUniqueId()
 
-  if clipOrder.timelineId ~= timelineId or not clipOrder.positions[id]
+  if clipOrder.timelineId ~= timelineId or clipOrder.positions[id] == nil
       or os.time() - clipOrder.builtAt >= CLIP_ORDER_REFRESH_INTERVAL then
     local clips = {}
     for track = 1, timeline:GetTrackCount('video') or 0 do
       for _, clip in ipairs(timeline:GetItemListInTrack('video', track) or {}) do
-        clips[#clips + 1] = { id = clip:GetUniqueId(), start = clip:GetStart(), track = track }
+        clips[#clips + 1] = {
+          id = clip:GetUniqueId(),
+          start = clip:GetStart(),
+          track = track,
+          gradable = clip:GetNodeGraph() ~= nil,
+        }
       end
     end
     table.sort(clips, function(a, b)
       if a.start ~= b.start then return a.start < b.start end
       return a.track < b.track
     end)
-    local positions = {}
-    for i, clip in ipairs(clips) do positions[clip.id] = i end
-    clipOrder = { timelineId = timelineId, positions = positions, total = #clips, builtAt = os.time() }
+    -- Ungradable items map to false, so selecting one doesn't trigger a
+    -- rebuild on every poll.
+    local positions, total = {}, 0
+    for _, clip in ipairs(clips) do
+      if clip.gradable then
+        total = total + 1
+        positions[clip.id] = total
+      else
+        positions[clip.id] = false
+      end
+    end
+    clipOrder = { timelineId = timelineId, positions = positions, total = total, builtAt = os.time() }
   end
 
   local index = clipOrder.positions[id]
