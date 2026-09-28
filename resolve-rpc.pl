@@ -39,8 +39,10 @@ use constant {
 # Discord application "DaVinci Resolve"; its name is what shows after
 # "Playing". Can be overridden with "clientId" in config.json.
 use constant DEFAULT_CLIENT_ID => '1554134762598310018';
-# Image URL (or uploaded asset name) for the large image.
-use constant DEFAULT_LARGE_IMAGE => '';
+# Image URL (or uploaded asset name) for the large image. A URL means nothing
+# has to be uploaded to the Discord application. Logo by Blackmagic Design,
+# via Wikimedia Commons (CC BY-SA 4.0).
+use constant DEFAULT_LARGE_IMAGE => 'https://upload.wikimedia.org/wikipedia/commons/4/4d/DaVinci_Resolve_Studio.png';
 
 # Plain descriptions rather than page names: most people seeing the status
 # don't know what the "Fairlight" or "Deliver" page is.
