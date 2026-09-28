@@ -13,8 +13,8 @@ While a render is running, the state line changes to `Rendering · 45%`.
 
 It runs as a small background agent that starts at login. It does nothing
 while Resolve is closed, shows your presence as soon as Resolve opens, and
-clears it when Resolve quits. It only uses tools that come with macOS and
-Resolve, so there's nothing else to install.
+clears it when Resolve quits. It runs entirely on Resolve's own script
+interpreter, so there's nothing else to install.
 
 ## Requirements
 
@@ -45,14 +45,15 @@ apply within a few seconds.
 
 ## How it works
 
-Resolve has no way to run a script automatically at launch, so
-`resolve-rpc.pl` runs as a launch agent and watches for the Resolve process.
-When Resolve opens, it starts `collector.lua` under `fuscript` (Resolve's own
-script interpreter), which reads the current page, project, timeline and render
-status through Resolve's scripting API. `resolve-rpc.pl` turns that into a
-presence and sends it over Discord's local IPC socket.
+Resolve has no way to run a script automatically at launch, so `presence.lua`
+runs under `fuscript` (Resolve's script interpreter) as a launch agent and
+waits for Resolve to open. It reads the current page, project, timeline and
+render status through Resolve's scripting API, and sends the presence to
+Discord with `discord_ipc.lua`. That file talks to Discord's local IPC socket
+directly through LuaJIT's FFI (a Unix socket on macOS, a named pipe on
+Windows), so no other runtime is needed.
 
-The log is at `~/Library/Application Support/resolve-discord-rpc/resolve-rpc.log`.
+The log is at `~/Library/Application Support/resolve-discord-rpc/presence.log`.
 
 ## Credits
 

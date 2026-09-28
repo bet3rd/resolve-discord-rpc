@@ -10,8 +10,18 @@ INSTALL_DIR="$HOME/Library/Application Support/resolve-discord-rpc"
 PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
 DOMAIN="gui/$(id -u)"
 
+FUSCRIPT="/Applications/DaVinci Resolve/DaVinci Resolve.app/Contents/Libraries/Fusion/fuscript"
+
+if [ ! -x "$FUSCRIPT" ]; then
+  echo "DaVinci Resolve not found at /Applications/DaVinci Resolve" >&2
+  exit 1
+fi
+
 mkdir -p "$INSTALL_DIR" "$HOME/Library/LaunchAgents"
-cp "$SOURCE_DIR/resolve-rpc.pl" "$SOURCE_DIR/collector.lua" "$INSTALL_DIR/"
+
+# Remove files from the older Perl-based version.
+rm -f "$INSTALL_DIR/resolve-rpc.pl" "$INSTALL_DIR/collector.lua" "$INSTALL_DIR/resolve-rpc.log"
+cp "$SOURCE_DIR/presence.lua" "$SOURCE_DIR/discord_ipc.lua" "$INSTALL_DIR/"
 
 if [ ! -f "$INSTALL_DIR/config.json" ]; then
   cp "$SOURCE_DIR/config.example.json" "$INSTALL_DIR/config.json"
@@ -26,8 +36,10 @@ cat > "$PLIST" <<EOF
   <string>$LABEL</string>
   <key>ProgramArguments</key>
   <array>
-    <string>/usr/bin/perl</string>
-    <string>$INSTALL_DIR/resolve-rpc.pl</string>
+    <string>$FUSCRIPT</string>
+    <string>-l</string>
+    <string>lua</string>
+    <string>$INSTALL_DIR/presence.lua</string>
   </array>
   <key>RunAtLoad</key>
   <true/>
@@ -36,9 +48,9 @@ cat > "$PLIST" <<EOF
   <key>ProcessType</key>
   <string>Background</string>
   <key>StandardOutPath</key>
-  <string>$INSTALL_DIR/resolve-rpc.log</string>
+  <string>$INSTALL_DIR/presence.log</string>
   <key>StandardErrorPath</key>
-  <string>$INSTALL_DIR/resolve-rpc.log</string>
+  <string>$INSTALL_DIR/presence.log</string>
 </dict>
 </plist>
 EOF
@@ -48,4 +60,4 @@ launchctl bootout "$DOMAIN/$LABEL" 2>/dev/null || true
 launchctl bootstrap "$DOMAIN" "$PLIST"
 
 echo "Installed. Settings: $INSTALL_DIR/config.json"
-echo "Log: $INSTALL_DIR/resolve-rpc.log"
+echo "Log: $INSTALL_DIR/presence.log"

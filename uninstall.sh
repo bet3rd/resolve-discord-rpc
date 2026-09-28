@@ -8,7 +8,7 @@ INSTALL_DIR="$HOME/Library/Application Support/resolve-discord-rpc"
 PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
 
 launchctl bootout "gui/$(id -u)/$LABEL" 2>/dev/null || true
-rm -f "$PLIST" "$INSTALL_DIR/resolve-rpc.pl" "$INSTALL_DIR/collector.lua" "$INSTALL_DIR/resolve-rpc.log"
+rm -f "$PLIST" "$INSTALL_DIR/presence.lua" "$INSTALL_DIR/discord_ipc.lua" "$INSTALL_DIR/presence.log"
 
 if [ "${1:-}" = "--purge" ]; then
   rm -rf "$INSTALL_DIR"
