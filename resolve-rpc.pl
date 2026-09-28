@@ -38,7 +38,7 @@ use constant {
 
 # Discord application "DaVinci Resolve"; its name is what shows after
 # "Playing". Can be overridden with "clientId" in config.json.
-use constant DEFAULT_CLIENT_ID => '';
+use constant DEFAULT_CLIENT_ID => '1554134762598310018';
 # Image URL (or uploaded asset name) for the large image.
 use constant DEFAULT_LARGE_IMAGE => '';
 
