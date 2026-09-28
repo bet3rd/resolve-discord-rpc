@@ -48,7 +48,7 @@ cat > "$PLIST" <<EOF
   <key>ProcessType</key>
   <string>Background</string>
   <key>StandardOutPath</key>
-  <string>$INSTALL_DIR/presence.log</string>
+  <string>/dev/null</string>
   <key>StandardErrorPath</key>
   <string>$INSTALL_DIR/presence.log</string>
 </dict>

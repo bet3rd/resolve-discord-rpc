@@ -15,9 +15,9 @@ local DEFAULT_CLIENT_ID = '1554134762598310018'
 -- Logo by Blackmagic Design, via Wikimedia Commons (CC BY-SA 4.0).
 local DEFAULT_LARGE_IMAGE = 'https://upload.wikimedia.org/wikipedia/commons/4/4d/DaVinci_Resolve_Studio.png'
 
--- Small page icons: Twemoji (CC BY 4.0), pinned to a release so the images
--- can't change underneath us.
-local ICON_BASE = 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.3/assets/72x72/'
+-- Small page icons, from icons/ in this repo, served by jsDelivr. Pinned to
+-- the commit that added them so the images can't change underneath us.
+local ICON_BASE = 'https://cdn.jsdelivr.net/gh/bet3rd/resolve-discord-rpc@2238baad8b74f373e7591ad46d3d0d59947b1e30/icons/'
 
 local POLL_INTERVAL = 1
 local WAIT_FOR_RESOLVE_INTERVAL = 5
@@ -33,28 +33,38 @@ local MAX_POLL_GAP = 30
 -- people seeing the status don't know what the "Fairlight" page is. The page
 -- name only appears when hovering the icon.
 local PAGES = {
-  media = { activity = 'Organizing media', title = 'Media page', icon = '1f5c2' },
-  cut = { activity = 'Editing a video', title = 'Cut page', icon = '2702' },
-  edit = { activity = 'Editing a video', title = 'Edit page', icon = '1f3ac' },
-  fusion = { activity = 'Creating visual effects', title = 'Fusion page', icon = '2728' },
-  color = { activity = 'Color grading', title = 'Color page', icon = '1f3a8' },
-  fairlight = { activity = 'Mixing audio', title = 'Fairlight page', icon = '1f39a' },
-  deliver = { activity = 'Preparing an export', title = 'Deliver page', icon = '1f4e4' },
-  photo = { activity = 'Editing photos', title = 'Photo page', icon = '1f4f7' },
+  media = { activity = 'Organizing media', title = 'Media page', icon = 'page_media' },
+  cut = { activity = 'Editing a video', title = 'Cut page', icon = 'page_cut' },
+  edit = { activity = 'Editing a video', title = 'Edit page', icon = 'page_edit' },
+  fusion = { activity = 'Creating visual effects', title = 'Fusion page', icon = 'page_fusion' },
+  color = { activity = 'Color grading', title = 'Color page', icon = 'page_color' },
+  fairlight = { activity = 'Mixing audio', title = 'Fairlight page', icon = 'page_fairlight' },
+  deliver = { activity = 'Preparing an export', title = 'Deliver page', icon = 'page_deliver' },
+  photo = { activity = 'Editing photos', title = 'Photo page', icon = 'page_photo' },
 }
-local RENDER_ICON = '23f3'
+-- Resolve's own render button is the Deliver rocket.
+local RENDER_ICON = 'page_deliver'
 
-local function log(...)
-  io.write(os.date('[%Y-%m-%d %H:%M:%S] '), table.concat({ ... }), '\n')
-  io.stdout:flush()
-end
-
--- Config -----------------------------------------------------------------------
-
+-- Settings, project times and the log live in %APPDATA%\resolve-discord-rpc on
+-- Windows and ~/Library/Application Support/resolve-discord-rpc on macOS.
 local dataDir = os.getenv('RESOLVE_RPC_DATA_DIR')
   or os.getenv('APPDATA') and os.getenv('APPDATA') .. '\\resolve-discord-rpc\\'
   or os.getenv('HOME') .. '/Library/Application Support/resolve-discord-rpc/'
 local configPath = dataDir .. 'config.json'
+local logPath = dataDir .. 'presence.log'
+
+-- The script writes its own log rather than relying on the launcher to
+-- capture stdout, which the Windows scheduled task can't do. Until the log is
+-- opened (or in tests) it goes to stdout.
+local logHandle
+
+local function log(...)
+  local out = logHandle or io.stdout
+  out:write(os.date('[%Y-%m-%d %H:%M:%S] '), table.concat({ ... }), '\n')
+  out:flush()
+end
+
+-- Config -----------------------------------------------------------------------
 
 -- config.json is a flat object of strings and booleans, so a pattern match
 -- is enough to read it.
@@ -367,14 +377,12 @@ end
 
 loadProjectTimes()
 
--- The launch agent appends stdout to this log; start it over once it's big.
+-- Start the log over once it's big.
 local MAX_LOG_SIZE = 1024 * 1024
-local logPath = configPath:gsub('config%.json$', 'presence.log')
-local logFile = io.open(logPath, 'r')
-if logFile then
-  local size = logFile:seek('end')
-  logFile:close()
-  if size > MAX_LOG_SIZE then io.open(logPath, 'w'):close() end
+logHandle = io.open(logPath, 'a')
+if logHandle and logHandle:seek('end') > MAX_LOG_SIZE then
+  logHandle:close()
+  logHandle = io.open(logPath, 'w')
 end
 
 log('Started')
